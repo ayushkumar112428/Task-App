@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:taskapp/search.dart';
 import 'package:taskapp/sql_helper.dart';
 import 'package:taskapp/taskdata.dart';
 
@@ -121,7 +122,12 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
             child: Text(
           'TASK',
           style: TextStyle(color: Colors.white),
-        )),
+        ),),
+        actions: [
+          IconButton(onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>const SearchTask()));
+          }, icon: const Icon(Icons.search))
+        ],
       ),
       body: _isLoading
           ? const Center(
