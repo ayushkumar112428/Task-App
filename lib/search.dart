@@ -12,22 +12,26 @@ class SearchTask extends StatefulWidget {
 class _SearchTaskState extends State<SearchTask> {
   List<Map<String, dynamic>> _task = [];
   List<Map<String, dynamic>> _foundTask = [];
+  bool _isLoading = true;
   void _refreshTask() async {
     final data = await SQLHelper.getItems();
     setState(() {
       _task = data;
+      _foundTask = _task;
+      _isLoading = false;
     });
+
   }
   @override
   void initState() {
     // TODO: implement initState
     _refreshTask();
+    // _foundTask = _task;
     super.initState();
-    _foundTask = _task;
   }
   void _runFilter(String enteredKeyword) {
     List<Map<String, dynamic>> results = [];
-    if (enteredKeyword.isEmpty) {
+    if (enteredKeyword.isEmpty || enteredKeyword == "") {
       // if the search field is empty or only contains white-space, we'll display all users
       results = _task;
     } else {
@@ -93,15 +97,18 @@ class _SearchTaskState extends State<SearchTask> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(10),
+      body: _isLoading
+          ? const Center(
+        child: CircularProgressIndicator(),
+      ): Padding(
+        padding: const EdgeInsets.only(top: 40,left: 7,right: 7,bottom: 7),
         child: Column(
           children: [
             TextField(
               onChanged: (value) => _runFilter(value),
               decoration: InputDecoration(
                 contentPadding:
-                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15),
+                const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
                 hintText: "Search",
                 suffixIcon: const Icon(Icons.search),
                 // prefix: Icon(Icons.search),
@@ -176,8 +183,7 @@ class _SearchTaskState extends State<SearchTask> {
                     ),
                   ),
                 ),
-              )
-                  : const Text(
+              ): const Text(
                 'No results found Please try with different search',
                 style: TextStyle(fontSize: 24),
               ),
@@ -192,4 +198,3 @@ class _SearchTaskState extends State<SearchTask> {
     _refreshTask();
   }
 }
-

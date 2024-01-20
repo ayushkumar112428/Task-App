@@ -12,14 +12,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(
-        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        // colorScheme: ColorScheme.fromSeed(primary: Colors.black,seedColor: Colors.black),
         useMaterial3: true,
       ),
       home: const TaskHomeScreen(),
     );
   }
 }
-
-
-

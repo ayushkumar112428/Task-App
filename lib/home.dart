@@ -3,8 +3,6 @@ import 'package:taskapp/search.dart';
 import 'package:taskapp/sql_helper.dart';
 import 'package:taskapp/taskdata.dart';
 
-List<Map<String, dynamic>> _task = [];
-
 class TaskHomeScreen extends StatefulWidget {
   const TaskHomeScreen({Key? key}) : super(key: key);
 
@@ -14,7 +12,7 @@ class TaskHomeScreen extends StatefulWidget {
 
 class _TaskHomeScreenState extends State<TaskHomeScreen> {
   bool _isLoading = true;
-
+  List<Map<String, dynamic>> _task = [];
   void _refreshTask() async {
     final data = await SQLHelper.getItems();
     setState(() {
@@ -25,8 +23,8 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
   }
   @override
   void initState() {
-    super.initState();
     _refreshTask();
+    super.initState();
   }
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -35,6 +33,8 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
   final TextEditingController _priorityController = TextEditingController();
   bool isCompleted = false;
   Future<void> _addItem() async {
+    print(
+        ".............................................Add item.......................................");
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -42,6 +42,8 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
             isCompleted: isCompleted),
       ),
     );
+    print(
+        "************************************************* Add************************************");
     _nameController.text = result['name'];
     _descriptionController.text = result['description'];
     _dateController.text = result['date'];
@@ -58,6 +60,7 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
     _refreshTask();
   }
   Future<void> _updateItem(int id, int index) async {
+    print("............................update...............................");
     if (_task[index]['isCompleted'] == 1) {
       isCompleted = true;
     } else {
@@ -83,12 +86,12 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
     isCompleted = result['isCompleted'];
     await SQLHelper.updateItem(
       id,
-      _nameController.text,
-      _descriptionController.text,
-      _dateController.text,
-      _timeController.text,
-      _priorityController.text,
-      isCompleted,
+      result['name'],
+      result['description'],
+      result['date'],
+      result['time'],
+      result['priority'],
+      result['isCompleted'],
     );
     _refreshTask();
   }
@@ -115,14 +118,13 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        // backgroundColor: Colors.black,
         title: const Center(
             child: Text(
           'TASK',
           style: TextStyle(color: Colors.white),
-        ),),
+        )),
         actions: [
           IconButton(onPressed: (){
             Navigator.push(context, MaterialPageRoute(builder: (context)=>const SearchTask()));
@@ -139,56 +141,59 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
                 onTap: () {
                   _updateItem(_task[index]['id'], index);
                 },
-                child: Card(
-                  color: Colors.white30,
-                  elevation: 5,
-                  // margin: const EdgeInsets.all(15),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _task[index]['name'],
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            IconButton(
-                                onPressed: () {
-                                  _deleteItem(_task[index]['id']);
-                                },
-                                icon: const Icon(Icons.delete))
-                          ],
-                        ),
-                        Text(
-                          _task[index]['description'],
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 16,
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Card(
+                    color: Colors.white30,
+                    elevation: 5,
+                    // margin: const EdgeInsets.all(15),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _task[index]['name'],
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              IconButton(
+                                  onPressed: () {
+                                    _deleteItem(_task[index]['id']);
+                                  },
+                                  icon: const Icon(Icons.delete))
+                            ],
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          "Priority: ${_task[index]['priority']} & Date: ${_task[index]['date']}",
-                          style: TextStyle(
-                            color: _getColor(
-                              _task[index]['priority'],
+                          Text(
+                            _task[index]['description'],
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 16,
                             ),
-                            letterSpacing: 1.2,
-                            fontWeight: FontWeight.w400,
-                            fontSize: 16,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                      ],
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            "Priority: ${_task[index]['priority']} & Date: ${_task[index]['date']}",
+                            style: TextStyle(
+                              color: _getColor(
+                                _task[index]['priority'],
+                              ),
+                              letterSpacing: 1.2,
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -204,7 +209,6 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
       ),
     );
   }
-
   Future<void> _deleteItem(int id) async {
     await SQLHelper.deleteItem(id);
     _refreshTask();

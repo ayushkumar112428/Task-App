@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TaskData extends StatefulWidget {
   final String? name;
@@ -24,8 +25,8 @@ class TaskData extends StatefulWidget {
 class _TaskDataState extends State<TaskData> {
   TextEditingController nameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
-  TextEditingController dateController = TextEditingController();
-  TextEditingController timeController = TextEditingController();
+  String? selectedDate;
+  String? selectedTime;
   TextEditingController priorityController = TextEditingController();
   bool completed = false;
 
@@ -34,8 +35,8 @@ class _TaskDataState extends State<TaskData> {
     super.initState();
     nameController = TextEditingController(text: widget.name);
     descriptionController = TextEditingController(text: widget.description);
-    dateController = TextEditingController(text: widget.date);
-    timeController = TextEditingController(text: widget.time);
+    selectedDate = widget.date;
+    selectedTime = widget.time;
     priorityController = TextEditingController(text: widget.priority);
     completed = widget.isCompleted;
   }
@@ -46,6 +47,18 @@ class _TaskDataState extends State<TaskData> {
       // backgroundColor: Colors.black,
       appBar: AppBar(
         actions: [
+          IconButton(onPressed: ()async{
+            DateTime? pickDate = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime.now(), lastDate: DateTime(2030));
+            if(pickDate!=null){
+              selectedDate = DateFormat('dd-MM-yyyy').format(pickDate);
+            }
+          }, icon: const Icon(Icons.date_range)),
+          IconButton(onPressed: () async{
+            TimeOfDay? pickTime = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+            if(pickTime!=null){
+              selectedTime = pickTime.format(context);
+            }
+          }, icon: const Icon(Icons.access_time_rounded)),
           Checkbox(
             value: completed,
             onChanged: (value) {
@@ -59,8 +72,8 @@ class _TaskDataState extends State<TaskData> {
               final editedContact = {
                 'name': nameController.text,
                 'description': descriptionController.text,
-                'date': dateController.text,
-                'time': timeController.text,
+                'date': selectedDate,
+                'time': selectedTime,
                 'priority': priorityController.text,
                 'isCompleted': completed,
               };
@@ -71,7 +84,7 @@ class _TaskDataState extends State<TaskData> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Column(
           children: [
             TextFormField(
@@ -79,27 +92,6 @@ class _TaskDataState extends State<TaskData> {
               maxLines: null,
               decoration: const InputDecoration(
                 hintText: 'Task Name',
-                // border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: dateController,
-              maxLines: null,
-              decoration: const InputDecoration(
-                hintText: 'Date...',
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              controller: timeController,
-              maxLines: null,
-              decoration: const InputDecoration(
-                hintText: 'Time...',
                 // border: OutlineInputBorder(),
               ),
             ),
