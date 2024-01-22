@@ -14,7 +14,7 @@ class _SearchTaskState extends State<SearchTask> {
   List<Map<String, dynamic>> _foundTask = [];
   bool _isLoading = true;
   void _refreshTask() async {
-    final data = await SQLHelper.getItems();
+    final data = await SQLHelper.getItemsOrderBy();
     setState(() {
       _task = data;
       _foundTask = _task;
@@ -26,12 +26,11 @@ class _SearchTaskState extends State<SearchTask> {
   void initState() {
     // TODO: implement initState
     _refreshTask();
-    // _foundTask = _task;
     super.initState();
   }
   void _runFilter(String enteredKeyword) {
     List<Map<String, dynamic>> results = [];
-    if (enteredKeyword.isEmpty || enteredKeyword == "") {
+    if (enteredKeyword.isEmpty) {
       // if the search field is empty or only contains white-space, we'll display all users
       results = _task;
     } else {
@@ -46,7 +45,7 @@ class _SearchTaskState extends State<SearchTask> {
   bool isCompleted = false;
   Future<void> _updateItem(int id, int index) async {
     // print("............................update...............................");
-    if (_task[index]['isCompleted'] == 1) {
+    if (_foundTask[index]['isCompleted'] == 1) {
       isCompleted = true;
     } else {
       isCompleted = false;
@@ -55,11 +54,11 @@ class _SearchTaskState extends State<SearchTask> {
       context,
       MaterialPageRoute(
         builder: (context) => TaskData(
-            name: _task[index]['name'],
-            description: _task[index]['description'],
-            date: _task[index]['date'],
-            time: _task[index]['time'],
-            priority: _task[index]['priority'],
+            name: _foundTask[index]['name'],
+            description: _foundTask[index]['description'],
+            date: _foundTask[index]['date'],
+            time: _foundTask[index]['time'],
+            priority: _foundTask[index]['priority'],
             isCompleted: isCompleted),
       ),
     );
@@ -127,7 +126,7 @@ class _SearchTaskState extends State<SearchTask> {
                 itemCount: _foundTask.length,
                 itemBuilder: (context, index) => InkWell(
                   onTap: () {
-                    _updateItem(_task[index]['id'], index);
+                    _updateItem(_foundTask[index]['id'], index);
                   },
                   child: Card(
                     color: Colors.white30,
@@ -142,7 +141,7 @@ class _SearchTaskState extends State<SearchTask> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                _task[index]['name'],
+                                _foundTask[index]['name'],
                                 style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,
@@ -150,13 +149,13 @@ class _SearchTaskState extends State<SearchTask> {
                               ),
                               IconButton(
                                   onPressed: () {
-                                    _deleteItem(_task[index]['id']);
+                                    _deleteItem(_foundTask[index]['id']);
                                   },
                                   icon: const Icon(Icons.delete))
                             ],
                           ),
                           Text(
-                            _task[index]['description'],
+                            _foundTask[index]['description'],
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 16,
@@ -168,10 +167,10 @@ class _SearchTaskState extends State<SearchTask> {
                             height: 5,
                           ),
                           Text(
-                            "Priority: ${_task[index]['priority']} & Date: ${_task[index]['date']}",
+                            "Priority: ${_foundTask[index]['priority']} & Date: ${_task[index]['date']}",
                             style: TextStyle(
                               color: _getColor(
-                                _task[index]['priority'],
+                                _foundTask[index]['priority'],
                               ),
                               letterSpacing: 1.2,
                               fontWeight: FontWeight.w400,
@@ -198,3 +197,4 @@ class _SearchTaskState extends State<SearchTask> {
     _refreshTask();
   }
 }
+

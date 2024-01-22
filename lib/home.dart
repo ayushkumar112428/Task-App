@@ -9,12 +9,11 @@ class TaskHomeScreen extends StatefulWidget {
   @override
   State<TaskHomeScreen> createState() => _TaskHomeScreenState();
 }
-
 class _TaskHomeScreenState extends State<TaskHomeScreen> {
   bool _isLoading = true;
   List<Map<String, dynamic>> _task = [];
   void _refreshTask() async {
-    final data = await SQLHelper.getItems();
+    final data = await SQLHelper.getItemsOrderBy();
     setState(() {
       _task = data;
       _isLoading = false;
@@ -33,8 +32,7 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
   final TextEditingController _priorityController = TextEditingController();
   bool isCompleted = false;
   Future<void> _addItem() async {
-    print(
-        ".............................................Add item.......................................");
+    // print(".............................................Add item.......................................");
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -42,8 +40,7 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
             isCompleted: isCompleted),
       ),
     );
-    print(
-        "************************************************* Add************************************");
+    // print("************************************************* Add************************************");
     _nameController.text = result['name'];
     _descriptionController.text = result['description'];
     _dateController.text = result['date'];
@@ -60,7 +57,7 @@ class _TaskHomeScreenState extends State<TaskHomeScreen> {
     _refreshTask();
   }
   Future<void> _updateItem(int id, int index) async {
-    print("............................update...............................");
+    // print("............................update...............................");
     if (_task[index]['isCompleted'] == 1) {
       isCompleted = true;
     } else {

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
 class SQLHelper {
@@ -52,6 +53,11 @@ class SQLHelper {
   static Future<List<Map<String, dynamic>>> getItems() async {
     final db = await SQLHelper.db();
     return db.query('tasks', orderBy: "id");
+  }
+
+  static Future<List<Map<String,dynamic>>> getItemsOrderBy() async {
+    final db = await SQLHelper.db();
+    return db.query('tasks', orderBy: 'date ASC, time ASC');
   }
 
   static Future<List<Map<String, dynamic>>> getItem(int id) async {
